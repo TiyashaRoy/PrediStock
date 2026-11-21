@@ -1,6 +1,8 @@
 # 📈 PrediStock
 
 AI-Based Stock Price Prediction System
+## Live Demo
+[Open PrediStock](https://predistock-shhjimvrlcdxu6pnt5ipy3.streamlit.app/)
 
 ## About the Project
 
