@@ -1,12 +1,14 @@
 # PrediStock - News Sentiment Analysis
+# Using Google News RSS instead of Yahoo Finance
 
-import yfinance as yf
+import feedparser
 import pandas as pd
 import os
 
+from urllib.parse import quote_plus
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
-# 1. Initialize sentiment analyzer
+# 1. Initialize analyzer
 
 analyzer = SentimentIntensityAnalyzer()
 
@@ -14,32 +16,33 @@ analyzer = SentimentIntensityAnalyzer()
 
 ticker_symbol = "AAPL"
 
-stock = yf.Ticker(ticker_symbol)
+# 3. Fetch news from Google News RSS
 
-# 3. Fetch financial news
+query = quote_plus(f"{ticker_symbol} stock")
 
-news = stock.news
+url = (
+    f"https://news.google.com/rss/search?q={query}"
+    "&hl=en-US&gl=US&ceid=US:en"
+)
 
-headlines = []
+feed = feedparser.parse(url)
 
-for item in news:
-    content = item.get("content", {})
-    title = content.get("title") or item.get("title")
+headlines = [
+    entry.title for entry in feed.entries
+    if entry.get("title")
+]
 
-    if title:
-        headlines.append(title)
-
-# 4. Check whether news is available
+# 4. Check news availability
 
 if not headlines:
-    print("No financial news headlines found.")
+    print("No news headlines found.")
     print("Please try again later.")
 
 else:
 
     results = []
 
-    # 5. Analyze each headline
+    # 5. Analyze headlines
 
     for headline in headlines:
 
@@ -57,6 +60,7 @@ else:
             sentiment = "Neutral"
 
         results.append({
+            "Stock": ticker_symbol,
             "Headline": headline,
             "Sentiment": sentiment,
             "Score": compound
@@ -66,20 +70,18 @@ else:
 
     df = pd.DataFrame(results)
 
-    # 7. Display results
-
     print("\nPREDISTOCK NEWS SENTIMENT ANALYSIS")
     print("----------------------------------")
 
     print(df.to_string(index=False))
 
-    # 8. Count sentiment categories
+    # 7. Sentiment summary
 
     print("\nSENTIMENT SUMMARY")
 
     print(df["Sentiment"].value_counts())
 
-    # 9. Save results
+    # 8. Save results
 
     os.makedirs("outputs", exist_ok=True)
 
@@ -89,4 +91,4 @@ else:
     )
 
     print("\nSentiment analysis completed!")
-    print("Results saved in outputs/news_sentiment.csv")
+    print("Saved: outputs/news_sentiment.csv")
