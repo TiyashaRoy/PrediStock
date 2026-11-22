@@ -33,17 +33,7 @@ forecast stock price trends.
 - Plotly
 - Yahoo Finance API
 
-## Installation
-
-Clone the repository:
-
-git clone YOUR_GITHUB_REPOSITORY_URL
-
-Install dependencies:
-
-pip install -r requirements.txt
-
-Run the application:
+Run the application: 
 
 streamlit run app.py
 
